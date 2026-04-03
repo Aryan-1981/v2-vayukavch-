@@ -115,109 +115,120 @@ export default function PurifierLogo({
           </filter>
         </defs>
 
-        {/* ICON */}
+        {/* ICON - Cleaner Car Design */}
         <g id="vk_icon" transform="translate(0,0)">
-          {/* incoming dirty airflow */}
-          <g id="air-in" opacity={0.92} filter={theme === "dark" ? "url(#vk_glow)" : undefined}>
+          {/* Incoming dirty air stream */}
+          <g id="air-in" opacity={0.85}>
             <motion.path
-              id="air-in-path"
-              d="M2 34c14 0 18-10 34-10 10 0 14 4 20 7"
+              d="M2 32 Q12 28, 20 30"
               stroke="url(#vk_dirty)"
-              strokeWidth={2.4}
+              strokeWidth={1.8}
               strokeLinecap="round"
-              strokeDasharray="10 10"
-              {...(shouldAnimate ? dashLoop : {})}
+              fill="none"
+              {...(shouldAnimate ? { ...dashLoop, animate: { strokeDashoffset: [0, -20] }, transition: { duration: 1.4, ease: [0, 0, 1, 1] as const, repeat: Infinity } } : {})}
+              strokeDasharray="5 5"
             />
             <motion.circle
-              id="particles-dirty"
-              cx="16"
+              cx="8"
               cy="30"
-              r="1.5"
+              r="1"
               fill={COLORS.dirty}
-              opacity={0.5}
-              {...(shouldAnimate ? particleLoop : {})}
-            />
-            <motion.circle
-              cx="24"
-              cy="28"
-              r="1.2"
-              fill={COLORS.dirty2}
-              opacity={0.35}
-              {...(shouldAnimate ? { ...particleLoop, transition: { ...(particleLoop as any).transition, delay: 0.15 } } : {})}
-            />
-            <motion.circle
-              cx="30"
-              cy="32"
-              r="1.1"
-              fill={COLORS.dirty}
-              opacity={0.25}
-              {...(shouldAnimate ? { ...particleLoop, transition: { ...(particleLoop as any).transition, delay: 0.3 } } : {})}
+              opacity={0.6}
+              {...(shouldAnimate ? { animate: { opacity: [0.3, 0.8, 0.3], x: [0, 4, 0] }, transition: { duration: 1.5, ease: [0.65, 0, 0.35, 1] as const, repeat: Infinity } } : {})}
             />
           </g>
 
-          {/* car */}
-          <g id="car" stroke={muted}>
+          {/* Car body - minimalist, clean silhouette */}
+          <g id="car-body" stroke="none">
+            {/* Main chassis */}
             <path
-              id="car-body"
-              d="M20 42c2.8-9.2 8.9-14.6 18.8-14.6h23.8c7.2 0 11.4 2.8 15.1 9.2l2.2 3.8H26.3c-1.7 0-3.1 1.4-3.1 3.1V46H16v-3.1c0-0.3 0-0.6 0-0.8Z"
-              fill={theme === "dark" ? "rgba(255,255,255,0.10)" : "rgba(3,7,18,0.06)"}
+              d="M22 36 L20 42 L26 42 L24 36 Z M56 36 L54 42 L60 42 L58 36 Z"
+              fill={theme === "dark" ? "rgba(255,255,255,0.12)" : "rgba(3,7,18,0.08)"}
             />
-            <circle
-              id="wheel-front"
-              cx="40"
-              cy="46"
-              r="5.6"
-              fill={theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(3,7,18,0.06)"}
+            {/* Body profile - side view */}
+            <path
+              d="M24 36 Q28 28, 38 26 L72 26 Q76 28, 78 36"
+              fill={theme === "dark" ? "rgba(255,255,255,0.15)" : "rgba(3,7,18,0.10)"}
+              stroke={ink}
+              strokeWidth={0.8}
             />
-            <circle
-              id="wheel-rear"
-              cx="68"
-              cy="46"
-              r="5.6"
-              fill={theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(3,7,18,0.06)"}
-            />
-
-            {/* rooftop purifier module */}
-            <rect
-              id="roof-unit"
-              x="56"
-              y="21"
-              width="18"
-              height="9"
-              rx="3"
-              fill={theme === "dark" ? "rgba(34,197,94,0.14)" : "rgba(34,197,94,0.12)"}
-              stroke={theme === "dark" ? "rgba(34,197,94,0.35)" : "rgba(34,197,94,0.45)"}
-            />
-            <path id="roof-rail" d="M40 26h36" stroke={muted} strokeLinecap="round" />
+            
+            {/* Windows - minimalist rectangles */}
+            <rect x="30" y="30" width="8" height="4" rx="1" fill={theme === "dark" ? "rgba(100,200,255,0.15)" : "rgba(100,150,255,0.12)"} opacity={0.5} />
+            <rect x="42" y="30" width="8" height="4" rx="1" fill={theme === "dark" ? "rgba(100,200,255,0.15)" : "rgba(100,150,255,0.12)"} opacity={0.5} />
+            
+            {/* Wheels */}
+            <circle cx="28" cy="42" r="4" fill={theme === "dark" ? "rgba(255,255,255,0.10)" : "rgba(3,7,18,0.08)"} stroke={muted} strokeWidth={0.6} />
+            <circle cx="74" cy="42" r="4" fill={theme === "dark" ? "rgba(255,255,255,0.10)" : "rgba(3,7,18,0.08)"} stroke={muted} strokeWidth={0.6} />
+            
+            {/* Wheel detail */}
+            <circle cx="28" cy="42" r="2.2" fill="none" stroke={muted} strokeWidth={0.4} opacity={0.5} />
+            <circle cx="74" cy="42" r="2.2" fill="none" stroke={muted} strokeWidth={0.4} opacity={0.5} />
           </g>
 
-          {/* outgoing clean airflow */}
-          <g id="air-out" opacity={0.95} filter={theme === "dark" ? "url(#vk_glow)" : undefined}>
+          {/* Rooftop purifier module - indicator */}
+          <g id="purifier-module">
+            <rect
+              x="52"
+              y="20"
+              width="14"
+              height="8"
+              rx="2"
+              fill={theme === "dark" ? "rgba(34,197,94,0.12)" : "rgba(34,197,94,0.08)"}
+              stroke={theme === "dark" ? "rgba(34,197,94,0.30)" : "rgba(34,197,94,0.40)"}
+              strokeWidth={0.8}
+            />
+            {/* Purifier vents - animated */}
+            <motion.line
+              x1="55"
+              y1="22"
+              x2="55"
+              y2="26"
+              stroke={COLORS.clean}
+              strokeWidth={0.6}
+              opacity={0.7}
+              {...(shouldAnimate ? { animate: { opacity: [0.4, 0.9, 0.4] }, transition: { duration: 2, repeat: Infinity } } : {})}
+            />
+            <motion.line
+              x1="59"
+              y1="22"
+              x2="59"
+              y2="26"
+              stroke={COLORS.clean}
+              strokeWidth={0.6}
+              opacity={0.7}
+              {...(shouldAnimate ? { animate: { opacity: [0.4, 0.9, 0.4] }, transition: { duration: 2, repeat: Infinity, delay: 0.2 } } : {})}
+            />
+            <motion.line
+              x1="63"
+              y1="22"
+              x2="63"
+              y2="26"
+              stroke={COLORS.clean}
+              strokeWidth={0.6}
+              opacity={0.7}
+              {...(shouldAnimate ? { animate: { opacity: [0.4, 0.9, 0.4] }, transition: { duration: 2, repeat: Infinity, delay: 0.4 } } : {})}
+            />
+          </g>
+
+          {/* Outgoing clean air stream */}
+          <g id="air-out" opacity={0.9}>
             <motion.path
-              id="air-out-path"
-              d="M76 26c10 0 14 10 27 10 9 0 12-4 18-4"
+              d="M76 30 Q84 28, 94 32"
               stroke="url(#vk_clean)"
-              strokeWidth={2.6}
+              strokeWidth={1.8}
               strokeLinecap="round"
-              strokeDasharray="10 10"
-              {...(shouldAnimate ? { ...dashLoop, transition: { ...(dashLoop as any).transition, duration: 1.8 } } : {})}
+              fill="none"
+              {...(shouldAnimate ? { animate: { strokeDashoffset: [0, -20] }, transition: { duration: 1.5, ease: [0, 0, 1, 1] as const, repeat: Infinity } } : {})}
+              strokeDasharray="5 5"
             />
             <motion.circle
-              id="particles-clean"
-              cx="88"
+              cx="86"
               cy="30"
-              r="1.5"
-              fill={COLORS.clean2}
-              opacity={0.55}
-              {...(shouldAnimate ? { ...particleLoop, transition: { ...(particleLoop as any).transition, duration: 1.7, delay: 0.08 } } : {})}
-            />
-            <motion.circle
-              cx="96"
-              cy="33"
-              r="1.2"
+              r="1"
               fill={COLORS.clean}
-              opacity={0.35}
-              {...(shouldAnimate ? { ...particleLoop, transition: { ...(particleLoop as any).transition, duration: 1.9, delay: 0.25 } } : {})}
+              opacity={0.7}
+              {...(shouldAnimate ? { animate: { opacity: [0.4, 0.85, 0.4], x: [0, -4, 0] }, transition: { duration: 1.6, ease: [0.65, 0, 0.35, 1] as const, repeat: Infinity } } : {})}
             />
           </g>
         </g>
