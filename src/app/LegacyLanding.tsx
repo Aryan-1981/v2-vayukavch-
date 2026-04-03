@@ -172,6 +172,8 @@ export default function LegacyLanding({
 
   return (
     <div className="w-screen min-h-screen bg-[#0a0a0a] text-white selection:bg-green-500/30 overflow-x-hidden">
+      {/* Nature ambience background */}
+      <div aria-hidden="true" className="vk-nature-bg" />
       {/* Ambient / Particles - Full Screen Fixed */}
       <div aria-hidden="true" className="fixed inset-0 -z-10 w-screen h-screen pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(34,197,94,0.10),transparent_55%)]" />
@@ -299,27 +301,86 @@ export default function LegacyLanding({
         </div>
       </section>
 
-      {/* Problem */}
+            {/* Problem */}
       <section id="problem" className={`min-h-screen py-16 sm:py-24 relative ${visibleSections.problem ? "scroll-reveal" : ""}`}>
-        <div className="w-screen px-4 sm:px-6 px-4 sm:px-6">
-          <div className="text-center mb-12 sm:mb-16">
-            <span className="px-3 sm:px-4 py-1.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-400 text-xs sm:text-sm font-medium tracking-wide backdrop-blur-sm inline-block mb-4 sm:mb-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          
+          {/* WHAT MAKES US DIFFERENT Banner - Sleek Card Style */}
+          <div className="mb-20 sm:mb-32">
+            <div className="rounded-2xl p-6 sm:p-8 border border-white/10 bg-black/40 backdrop-blur-md relative overflow-hidden group hover:border-white/20 transition-colors">
+              {/* Left green accent border */}
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-green-500 to-green-600 rounded-l-2xl" />
+              
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+                {/* Lightning Icon */}
+                <div className="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-full bg-green-500/20 border border-green-500/40 flex items-center justify-center text-2xl">
+                  ⚡
+                </div>
+                
+                {/* Content */}
+                <div className="flex-1">
+                  <div className="text-xs sm:text-sm font-semibold text-green-400 tracking-wide mb-2 uppercase">
+                    WHAT MAKES US DIFFERENT
+                  </div>
+                  <p className="text-white text-sm sm:text-base leading-relaxed">
+                    Unlike traditional air monitoring systems, VayuKavach <span className="text-green-400 font-semibold">actively purifies outdoor air</span> in real-time as vehicles move through the city, and <span className="text-green-400 font-semibold">verifies performance</span> using PM7003 sensor data—delivering proven results, not just observations.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* THE URBAN CHALLENGE Section */}
+          <div className="text-center mb-16">
+            <span className="px-3 py-1.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-400 text-xs sm:text-sm font-medium tracking-wide backdrop-blur-sm inline-block mb-4">
               THE URBAN CHALLENGE
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6 text-white px-4">
-              Air pollution is <span className="text-red-400">invisible</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
+              Vehicles: From <span className="text-red-400">Polluters</span> to <span className="text-green-400">Purifiers</span>
             </h2>
-            <p className="text-base sm:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
-              Fine particulate matter (PM1/PM2.5/PM10) penetrates deep into the lungs. V2 proves purification performance by
-              measuring before (outer) and after (purified).
+            <p className="text-base sm:text-lg text-gray-400 max-w-3xl mx-auto mb-16">
+              Modern cities face a dense concentration of pollution at ground level. VayuKavach specifically targets the most harmful zones—the roads—using simple aerodynamics.
             </p>
+          </div>
+
+          {/* 3 Feature Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="rounded-3xl p-8 border border-white/10 bg-black/40 backdrop-blur-md hover:bg-white/5 transition-colors">
+              <div className="w-12 h-12 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center mb-6 text-2xl border border-red-500/30">
+                💨
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-4">Traffic Exhaust Zones</h3>
+              <p className="text-sm text-gray-400 leading-relaxed">
+                The highest levels of toxic PM2.5 and PM10 particles hang in layers exactly where pedestrians, cyclists, and drivers commute.
+              </p>
+            </div>
+            
+            <div className="rounded-3xl p-8 border border-white/10 bg-black/40 backdrop-blur-md hover:bg-white/5 transition-colors">
+              <div className="w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center mb-6 text-2xl border border-blue-500/30">
+                ⚡
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-4">Passive Air Intake</h3>
+              <p className="text-sm text-gray-400 leading-relaxed">
+                Moving vehicles naturally encounter immense air resistance. We capture this incoming air through passive scoops, relying less on internal fans.
+              </p>
+            </div>
+            
+            <div className="rounded-3xl p-8 border border-white/10 bg-black/40 backdrop-blur-md hover:bg-white/5 transition-colors">
+              <div className="w-12 h-12 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center mb-6 text-2xl border border-green-500/30">
+                🚌
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-4">Wasted Rooftop Space</h3>
+              <p className="text-sm text-gray-400 leading-relaxed">
+                Millions of buses, cabs, and delivery trucks drive empty, flat roofs around the city all day. We transform this unused asset into an active filtration grid.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Dashboard */}
-      <section id="dashboard" className={`min-h-screen py-16 sm:py-24 relative ${visibleSections.dashboard ? "scroll-reveal" : ""}`}>
-        <div className="w-screen px-4 sm:px-6 px-4 sm:px-6">
+      <section id="dashboard" className={`py-16 sm:py-24 relative ${visibleSections.dashboard ? "scroll-reveal" : ""}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 sm:mb-12 gap-4">
             <div>
               <span className="px-3 sm:px-4 py-1.5 rounded-full border border-green-500/30 bg-green-500/10 text-green-400 text-xs sm:text-sm font-medium tracking-wide backdrop-blur-sm inline-block mb-3 sm:mb-4">
@@ -336,33 +397,41 @@ export default function LegacyLanding({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            <div className="rounded-3xl p-8 border border-white/10 bg-white/5">
-              <div className="text-sm text-gray-400">Outdoor PM2.5</div>
-              <div className="mt-3 text-5xl font-bold">{outer?.pm25 != null ? outer.pm25.toFixed(1) : "--"}</div>
-              <div className="mt-2 text-sm text-gray-500">µg/m³</div>
-            </div>
-            <div className="rounded-3xl p-8 border border-white/10 bg-white/5">
-              <div className="text-sm text-gray-400">Purified PM2.5</div>
-              <div className="mt-3 text-5xl font-bold">{purified?.pm25 != null ? purified.pm25.toFixed(1) : "--"}</div>
-              <div className="mt-2 text-sm text-gray-500">µg/m³</div>
-              <div className={`mt-2 text-sm font-medium ${status.color}`}>{status.text}</div>
-            </div>
-            <div className="rounded-3xl p-8 border border-white/10 bg-white/5">
-              <div className="text-sm text-gray-400">Efficiency</div>
-              <div className="mt-3 text-5xl font-bold">
-                {efficiency == null ? "--" : `${Math.max(0, Math.min(100, efficiency)).toFixed(0)}%`}
+          <div className="-mx-4 sm:mx-0 mb-10 sm:mb-12">
+            <div className="flex gap-4 px-4 sm:px-0 overflow-x-auto sm:overflow-visible sm:grid sm:grid-cols-4 sm:gap-6 [scrollbar-width:none] [-ms-overflow-style:none]">
+              <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
+                <div className="text-sm sm:text-base text-gray-400">Outdoor PM2.5</div>
+                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{outer?.pm25 != null ? outer.pm25.toFixed(1) : "--"}</div>
+                <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
               </div>
-              <div className="mt-2 text-sm text-gray-500">PM2.5 reduction</div>
+
+              <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
+                <div className="text-sm sm:text-base text-gray-400">Purified PM2.5</div>
+                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{purified?.pm25 != null ? purified.pm25.toFixed(1) : "--"}</div>
+                <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
+                <div className={`mt-2 sm:mt-3 text-sm font-medium ${status.color}`}>{status.text}</div>
+              </div>
+
+              <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
+                <div className="text-sm sm:text-base text-gray-400">Outdoor PM10</div>
+                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{outer?.pm10 != null ? outer.pm10.toFixed(1) : "--"}</div>
+                <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
+              </div>
+
+              <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
+                <div className="text-sm sm:text-base text-gray-400">Purified PM10</div>
+                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{purified?.pm10 != null ? purified.pm10.toFixed(1) : "--"}</div>
+                <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
+              </div>
             </div>
           </div>
 
           <div className="rounded-3xl p-6 md:p-8 border border-white/10 bg-white/5">
             <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
               <span className="w-1 h-6 bg-green-500 rounded-full" />
-              Outdoor Trends (Baseline)
+              Outdoor Trends (Baseline) - PM2.5 & PM10
             </h3>
-            <div className="h-[350px] w-full">
+            <div className="h-[240px] sm:h-[320px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={outerHistory}>
                   <defs>
@@ -370,9 +439,9 @@ export default function LegacyLanding({
                       <stop offset="5%" stopColor="#f97316" stopOpacity={0.3} />
                       <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
                     </linearGradient>
-                    <linearGradient id="colorPM1" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                    <linearGradient id="colorPM10" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#ec4899" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#ec4899" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} opacity={0.3} />
@@ -388,7 +457,7 @@ export default function LegacyLanding({
                     itemStyle={{ color: "#fff" }}
                   />
                   <Area type="monotone" dataKey="PM2_5" stroke="#f97316" strokeWidth={3} fillOpacity={1} fill="url(#colorPM25)" />
-                  <Area type="monotone" dataKey="PM1" stroke="#22c55e" strokeWidth={3} fillOpacity={1} fill="url(#colorPM1)" />
+                  <Area type="monotone" dataKey="PM10" stroke="#ec4899" strokeWidth={3} fillOpacity={1} fill="url(#colorPM10)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
