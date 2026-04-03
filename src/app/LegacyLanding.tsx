@@ -5,6 +5,7 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import Section from "./Section";
 import ParticleField from "./ParticleField";
 import AnimatedLogo from "./AnimatedLogo";
+import PurifierLogo from "./PurifierLogo";
 
 type DeviceId = "outer" | "purified";
 
@@ -170,14 +171,14 @@ export default function LegacyLanding({
   ].map((label) => ({ label, href: `#${label.toLowerCase()}` }));
 
   return (
-    <div className="bg-[#0a0a0a] text-white min-h-screen selection:bg-green-500/30 overflow-x-hidden">
-      {/* Ambient / Particles */}
-      <div aria-hidden="true" className="fixed inset-0 -z-10">
+    <div className="w-screen min-h-screen bg-[#0a0a0a] text-white selection:bg-green-500/30 overflow-x-hidden">
+      {/* Ambient / Particles - Full Screen Fixed */}
+      <div aria-hidden="true" className="fixed inset-0 -z-10 w-screen h-screen pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(34,197,94,0.10),transparent_55%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_30%,rgba(56,189,248,0.08),transparent_55%)]" />
-        <div className="absolute inset-0 opacity-[0.06] [background-image:linear-gradient(rgba(255,255,255,0.28)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.28)_1px,transparent_1px)] [background-size:90px_90px]" />
+        <div className="absolute inset-0 opacity-[0.06] [background-image:linear-gradient(rgba(255,255,255,0.28)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.28)_1px,transparent_1px)] [background-size:90px_90px] animate-[vk-rotate_180s_linear_infinite]" />
         <div className="absolute inset-0 opacity-70">
-          <ParticleField className="absolute inset-0" density={46} />
+          <ParticleField className="absolute inset-0 w-full h-full" density={46} />
         </div>
       </div>
 
@@ -204,7 +205,7 @@ export default function LegacyLanding({
           scrolled ? "bg-black/80 backdrop-blur-lg border-b border-white/10 py-4" : "bg-transparent py-6"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center">
+        <div className="w-screen px-4 sm:px-6 px-4 sm:px-6 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <AnimatedLogo className="-ml-2" />
           </div>
@@ -251,7 +252,7 @@ export default function LegacyLanding({
       </nav>
 
       {/* Hero */}
-      <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section id="home" className="relative w-screen min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-[#112211] to-[#0a0a0a] z-0" />
         <div className="absolute top-1/4 left-1/4 w-64 h-64 md:w-96 md:h-96 bg-green-500/20 rounded-full blur-[100px] animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-64 h-64 md:w-96 md:h-96 bg-blue-500/20 rounded-full blur-[100px] animate-pulse delay-1000" />
@@ -269,6 +270,11 @@ export default function LegacyLanding({
             A rooftop-mounted air purification system for urban vehicles. Actively cleans polluted air while driving, verified by
             real-time PM7003 sensor readings.
           </p>
+
+          {/* Car Logo */}
+          <div className="mx-auto mb-12 flex justify-center">
+            <PurifierLogo animated size={120} variant="icon" theme="dark" />
+          </div>
 
           <div className="mx-auto mb-8 flex max-w-xl items-center justify-center gap-6 text-xs">
             <span className="text-orange-400">Polluted Air In</span>
@@ -295,7 +301,7 @@ export default function LegacyLanding({
 
       {/* Problem */}
       <section id="problem" className={`min-h-screen py-16 sm:py-24 relative ${visibleSections.problem ? "scroll-reveal" : ""}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="w-screen px-4 sm:px-6 px-4 sm:px-6">
           <div className="text-center mb-12 sm:mb-16">
             <span className="px-3 sm:px-4 py-1.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-400 text-xs sm:text-sm font-medium tracking-wide backdrop-blur-sm inline-block mb-4 sm:mb-6">
               THE URBAN CHALLENGE
@@ -313,7 +319,7 @@ export default function LegacyLanding({
 
       {/* Dashboard */}
       <section id="dashboard" className={`min-h-screen py-16 sm:py-24 relative ${visibleSections.dashboard ? "scroll-reveal" : ""}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="w-screen px-4 sm:px-6 px-4 sm:px-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 sm:mb-12 gap-4">
             <div>
               <span className="px-3 sm:px-4 py-1.5 rounded-full border border-green-500/30 bg-green-500/10 text-green-400 text-xs sm:text-sm font-medium tracking-wide backdrop-blur-sm inline-block mb-3 sm:mb-4">
@@ -391,7 +397,7 @@ export default function LegacyLanding({
       </section>
 
       <section id="system" className={`py-16 sm:py-24 relative ${visibleSections.system ? "scroll-reveal" : ""}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="w-screen px-4 sm:px-6 px-4 sm:px-6">
           <div className="text-center mb-12 sm:mb-16">
             <span className="px-3 sm:px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-xs sm:text-sm font-medium tracking-wide backdrop-blur-sm inline-block mb-4 sm:mb-6">
               SYSTEM ARCHITECTURE
