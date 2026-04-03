@@ -24,7 +24,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col vk-bg">
+      <body className="min-h-full vk-bg">
+        {/* ambient animated orbs */}
+        <div className="vk-orbs" aria-hidden="true">
+          <div className="vk-orb vk-orb--green" />
+          <div className="vk-orb vk-orb--sky" />
+          <div className="vk-orb vk-orb--violet" />
+        </div>
+
         <div className="mx-auto w-full max-w-6xl px-5 sm:px-6">
           {/* Top shell (older-site style: sticky, glassy) */}
           <div className="sticky top-0 z-20 -mx-5 sm:-mx-6">
@@ -33,7 +40,7 @@ export default function RootLayout({
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="grid size-9 place-items-center rounded-xl bg-white/5 ring-1 ring-white/10">
-                      <span className="text-sm font-semibold text-emerald-200">VK</span>
+                      <span className="text-sm font-semibold vk-gradient-text">VK</span>
                     </div>
                     <div className="leading-tight">
                       <div className="text-sm font-semibold">VayuKavach V2</div>
@@ -49,7 +56,7 @@ export default function RootLayout({
             </div>
           </div>
 
-          <main className="flex-1 py-10">{children}</main>
+          <main className="py-10">{children}</main>
 
           <footer className="border-t border-white/10 py-8 text-xs text-white/50">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
