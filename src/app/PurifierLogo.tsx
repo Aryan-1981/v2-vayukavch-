@@ -158,12 +158,22 @@ export default function PurifierLogo({
             <rect x="42" y="30" width="8" height="4" rx="1" fill={theme === "dark" ? "rgba(100,200,255,0.15)" : "rgba(100,150,255,0.12)"} opacity={0.5} />
             
             {/* Wheels */}
-            <circle cx="28" cy="42" r="4" fill={theme === "dark" ? "rgba(255,255,255,0.10)" : "rgba(3,7,18,0.08)"} stroke={muted} strokeWidth={0.6} />
-            <circle cx="74" cy="42" r="4" fill={theme === "dark" ? "rgba(255,255,255,0.10)" : "rgba(3,7,18,0.08)"} stroke={muted} strokeWidth={0.6} />
+            <g style={{ transformOrigin: "28px 42px" }} className={shouldAnimate ? "vk-wheel-spin" : ""}>
+              <circle cx="28" cy="42" r="4" fill={theme === "dark" ? "rgba(255,255,255,0.10)" : "rgba(3,7,18,0.08)"} stroke={muted} strokeWidth={0.6} />
+              <line x1="28" y1="38" x2="28" y2="40" stroke={muted} strokeWidth={0.6} />
+              <line x1="28" y1="44" x2="28" y2="46" stroke={muted} strokeWidth={0.6} />
+              <line x1="24" y1="42" x2="26" y2="42" stroke={muted} strokeWidth={0.6} />
+              <line x1="30" y1="42" x2="32" y2="42" stroke={muted} strokeWidth={0.6} />
+            </g>
+            <g style={{ transformOrigin: "74px 42px" }} className={shouldAnimate ? "vk-wheel-spin" : ""}>
+              <circle cx="74" cy="42" r="4" fill={theme === "dark" ? "rgba(255,255,255,0.10)" : "rgba(3,7,18,0.08)"} stroke={muted} strokeWidth={0.6} />
+              <line x1="74" y1="38" x2="74" y2="40" stroke={muted} strokeWidth={0.6} />
+              <line x1="74" y1="44" x2="74" y2="46" stroke={muted} strokeWidth={0.6} />
+              <line x1="70" y1="42" x2="72" y2="42" stroke={muted} strokeWidth={0.6} />
+              <line x1="76" y1="42" x2="78" y2="42" stroke={muted} strokeWidth={0.6} />
+            </g>
             
             {/* Wheel detail */}
-            <circle cx="28" cy="42" r="2.2" fill="none" stroke={muted} strokeWidth={0.4} opacity={0.5} />
-            <circle cx="74" cy="42" r="2.2" fill="none" stroke={muted} strokeWidth={0.4} opacity={0.5} />
           </g>
 
           {/* Rooftop purifier module - indicator */}
