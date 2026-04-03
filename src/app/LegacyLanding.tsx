@@ -259,16 +259,23 @@ export default function LegacyLanding({
         <div className="relative z-10 text-center px-4 sm:px-6 max-w-5xl mx-auto py-20">
           <div className="mb-6 flex justify-center">
             <span className="px-3 sm:px-4 py-1.5 rounded-full border border-green-500/30 bg-green-500/10 text-green-400 text-xs sm:text-sm font-medium tracking-wide backdrop-blur-sm">
-              SMART ROOFTOP AIR PURIFICATION • V2
+              SMART ROOFTOP AIR PURIFICATION
             </span>
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 sm:mb-8">
-            Outdoor vs Purified <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">in real time</span>
+            Purifying Air <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">On The Move</span>
           </h1>
           <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-8 sm:mb-10 max-w-3xl mx-auto leading-relaxed px-2">
-            Same single-page experience, updated for V2 equipment: <span className="text-white">outer</span> (baseline) and{" "}
-            <span className="text-white">purified</span> (outlet).
+            A rooftop-mounted air purification system for urban vehicles. Actively cleans polluted air while driving, verified by
+            real-time PM7003 sensor readings.
           </p>
+
+          <div className="mx-auto mb-8 flex max-w-xl items-center justify-center gap-6 text-xs">
+            <span className="text-orange-400">Polluted Air In</span>
+            <span className="text-white/30">•</span>
+            <span className="text-emerald-300">Clean Air Out</span>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
             <a
               href="#dashboard"
