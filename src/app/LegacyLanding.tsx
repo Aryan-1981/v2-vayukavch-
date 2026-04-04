@@ -8,6 +8,7 @@ import EfficiencyCard from "./EfficiencyCard";
 import PremiumAirQualityChart from "./PremiumAirQualityChart";
 import HowItWorks from "./HowItWorks";
 import WhyItMatters from "./WhyItMatters";
+import AboutVayuKavach from "./AboutVayuKavach";
 import Section from "./Section";
 import ParticleField from "./ParticleField";
 import AnimatedLogo from "./AnimatedLogo";
@@ -490,9 +491,7 @@ export default function LegacyLanding({
         Expand to multiple nodes, longer history, and alerts.
       </Section>
 
-      <Section id="about" eyebrow="ABOUT" title="About">
-        Modern Next.js V2 site with safe server-side data fetching.
-      </Section>
+      <AboutVayuKavach />
 
       <Section id="team" eyebrow="TEAM" title="Team">
         Team cards can be reintroduced next.
