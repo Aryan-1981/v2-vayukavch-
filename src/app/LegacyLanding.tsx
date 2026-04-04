@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { motion } from "framer-motion";
+import CountUp from "react-countup";
 import Section from "./Section";
 import ParticleField from "./ParticleField";
 import AnimatedLogo from "./AnimatedLogo";
@@ -47,6 +49,19 @@ function aqiStatus(pm25: number | null) {
   if (pm25 <= 150) return { text: "Unhealthy", color: "text-red-400", desc: "Everyone may experience health effects." };
   return { text: "Hazardous", color: "text-purple-400", desc: "Health warnings of emergency conditions." };
 }
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.2 }
+  }
+};
 
 async function fetchLatest(device_id: DeviceId) {
   const res = await fetch(`/api/latest?device_id=${device_id}`, { cache: "no-store" });
@@ -259,32 +274,37 @@ export default function LegacyLanding({
         <div className="absolute top-1/4 left-1/4 w-64 h-64 md:w-96 md:h-96 bg-green-500/20 rounded-full blur-[100px] animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-64 h-64 md:w-96 md:h-96 bg-blue-500/20 rounded-full blur-[100px] animate-pulse delay-1000" />
 
-        <div className="relative z-10 text-center px-4 sm:px-6 max-w-5xl mx-auto py-20">
-          <div className="mb-6 flex justify-center">
+        <motion.div 
+          className="relative z-10 text-center px-4 sm:px-6 max-w-5xl mx-auto py-20"
+          initial="hidden"
+          animate="visible"
+          variants={staggerContainer}
+        >
+          <motion.div variants={fadeInUp} className="mb-6 flex justify-center">
             <span className="px-3 sm:px-4 py-1.5 rounded-full border border-green-500/30 bg-green-500/10 text-green-400 text-xs sm:text-sm font-medium tracking-wide backdrop-blur-sm">
               SMART ROOFTOP AIR PURIFICATION
             </span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 sm:mb-8">
+          </motion.div>
+          <motion.h1 variants={fadeInUp} className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 sm:mb-8">
             Purifying Air <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">On The Move</span>
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-8 sm:mb-10 max-w-3xl mx-auto leading-relaxed px-2">
+          </motion.h1>
+          <motion.p variants={fadeInUp} className="text-base sm:text-lg md:text-xl text-gray-400 mb-8 sm:mb-10 max-w-3xl mx-auto leading-relaxed px-2">
             A rooftop-mounted air purification system for urban vehicles. Actively cleans polluted air while driving, verified by
             real-time PM7003 sensor readings.
-          </p>
+          </motion.p>
 
           {/* Car Logo */}
-          <div className="mx-auto mb-12 flex justify-center">
+          <motion.div variants={fadeInUp} className="mx-auto mb-12 flex justify-center">
             <PurifierLogo animated size={120} variant="icon" theme="dark" />
-          </div>
+          </motion.div>
 
-          <div className="mx-auto mb-8 flex max-w-xl items-center justify-center gap-6 text-xs">
+          <motion.div variants={fadeInUp} className="mx-auto mb-8 flex max-w-xl items-center justify-center gap-6 text-xs">
             <span className="text-orange-400">Polluted Air In</span>
             <span className="text-white/30">•</span>
             <span className="text-emerald-300">Clean Air Out</span>
-          </div>
+          </motion.div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
+          <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 justify-center px-4">
             <a
               href="#dashboard"
               className="px-6 sm:px-8 py-3 sm:py-4 bg-green-600 hover:bg-green-500 text-white rounded-full font-medium text-sm sm:text-base transition-all duration-300 hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] transform hover:-translate-y-1"
@@ -297,8 +317,8 @@ export default function LegacyLanding({
             >
               How It Works
             </a>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </section>
 
             {/* Problem */}
@@ -401,26 +421,26 @@ export default function LegacyLanding({
             <div className="flex gap-4 px-4 sm:px-0 overflow-x-auto sm:overflow-visible sm:grid sm:grid-cols-4 sm:gap-6 [scrollbar-width:none] [-ms-overflow-style:none]">
               <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
                 <div className="text-sm sm:text-base text-gray-400">Outdoor PM2.5</div>
-                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{outer?.pm25 != null ? outer.pm25.toFixed(1) : "--"}</div>
+                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{outer?.pm25 != null ? <CountUp end={outer.pm25} decimals={1} duration={1.5} preserveValue /> : "--"}</div>
                 <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
               </div>
 
               <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
                 <div className="text-sm sm:text-base text-gray-400">Purified PM2.5</div>
-                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{purified?.pm25 != null ? purified.pm25.toFixed(1) : "--"}</div>
+                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{purified?.pm25 != null ? <CountUp end={purified.pm25} decimals={1} duration={1.5} preserveValue /> : "--"}</div>
                 <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
                 <div className={`mt-2 sm:mt-3 text-sm font-medium ${status.color}`}>{status.text}</div>
               </div>
 
               <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
                 <div className="text-sm sm:text-base text-gray-400">Outdoor PM10</div>
-                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{outer?.pm10 != null ? outer.pm10.toFixed(1) : "--"}</div>
+                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{outer?.pm10 != null ? <CountUp end={outer.pm10} decimals={1} duration={1.5} preserveValue /> : "--"}</div>
                 <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
               </div>
 
               <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
                 <div className="text-sm sm:text-base text-gray-400">Purified PM10</div>
-                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{purified?.pm10 != null ? purified.pm10.toFixed(1) : "--"}</div>
+                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{purified?.pm10 != null ? <CountUp end={purified.pm10} decimals={1} duration={1.5} preserveValue /> : "--"}</div>
                 <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
               </div>
             </div>
