@@ -450,7 +450,9 @@ export default function LegacyLanding({
 
           <EfficiencyCard outerPM={outer?.pm25 ?? null} purifiedPM={purified?.pm25 ?? null} />
 
-          <PremiumAirQualityChart data={outerHistory} height={320} title="Outdoor Trends (Baseline)" subtitle="PM2.5 vs PM10" />
+          <div className="mt-10 sm:mt-12">
+            <PremiumAirQualityChart data={outerHistory} height={320} title="Outdoor Trends (Baseline)" subtitle="PM2.5 vs PM10" />
+          </div>
         </div>
       </section>
 
