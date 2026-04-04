@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import CountUp from "react-countup";
 import EfficiencyCard from "./EfficiencyCard";
 import PremiumAirQualityChart from "./PremiumAirQualityChart";
+import HowItWorks from "./HowItWorks";
 import Section from "./Section";
 import ParticleField from "./ParticleField";
 import AnimatedLogo from "./AnimatedLogo";
@@ -456,7 +457,7 @@ export default function LegacyLanding({
         </div>
       </section>
 
-      <section id="system" className={`py-16 sm:py-24 relative ${visibleSections.system ? "scroll-reveal" : ""}`}>
+      <section id="system" className={`py-16 sm:py-24 relative `}>
         <div className="w-screen px-4 sm:px-6 px-4 sm:px-6">
           <div className="text-center mb-12 sm:mb-16">
             <span className="px-3 sm:px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-xs sm:text-sm font-medium tracking-wide backdrop-blur-sm inline-block mb-4 sm:mb-6">
@@ -469,6 +470,16 @@ export default function LegacyLanding({
               Intake → filtration → verified output. V2 uses two sensors to validate purification results.
             </p>
           </div>
+
+          <HowItWorks
+            steps={[
+              { title: "Polluted Air In", description: "Intake scoop captures high-density road pollution as the vehicle moves." },
+              { title: "Filtration", description: "Air passes through a multi-stage filtration stack designed to trap PM2.5 and PM10." },
+              { title: "PM7003 Sensor", description: "A sensor measures particulate levels on the outlet path for verified performance." },
+              { title: "Blower Fan", description: "A controlled fan maintains steady flow across the filters and through the device." },
+              { title: "Clean Air Out", description: "Purified air is released back into the environment—measurable and repeatable." },
+            ]}
+          />
         </div>
       </section>
 
