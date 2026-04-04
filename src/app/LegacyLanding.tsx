@@ -417,36 +417,7 @@ export default function LegacyLanding({
             </div>
           </div>
 
-          <div className="-mx-4 sm:mx-0 mb-10 sm:mb-12">
-            <div className="flex gap-4 px-4 sm:px-0 overflow-x-auto sm:overflow-visible sm:grid sm:grid-cols-4 sm:gap-6 [scrollbar-width:none] [-ms-overflow-style:none]">
-              <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
-                <div className="text-sm sm:text-base text-gray-400">Outdoor PM2.5</div>
-                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{outer?.pm25 != null ? <CountUp end={outer.pm25} decimals={1} duration={1.5} preserveValue /> : "--"}</div>
-                <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
-              </div>
-
-              <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
-                <div className="text-sm sm:text-base text-gray-400">Purified PM2.5</div>
-                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{purified?.pm25 != null ? <CountUp end={purified.pm25} decimals={1} duration={1.5} preserveValue /> : "--"}</div>
-                <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
-                <div className={`mt-2 sm:mt-3 text-sm font-medium ${status.color}`}>{status.text}</div>
-              </div>
-
-              <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
-                <div className="text-sm sm:text-base text-gray-400">Outdoor PM10</div>
-                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{outer?.pm10 != null ? <CountUp end={outer.pm10} decimals={1} duration={1.5} preserveValue /> : "--"}</div>
-                <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
-              </div>
-
-              <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
-                <div className="text-sm sm:text-base text-gray-400">Purified PM10</div>
-                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{purified?.pm10 != null ? <CountUp end={purified.pm10} decimals={1} duration={1.5} preserveValue /> : "--"}</div>
-                <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-3xl p-6 md:p-8 border border-white/10 bg-white/5">
+          
             <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
               <span className="w-1 h-6 bg-green-500 rounded-full" />
               Outdoor Trends (Baseline) - PM2.5 & PM10
