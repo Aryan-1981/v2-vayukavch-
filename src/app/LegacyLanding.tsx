@@ -9,6 +9,7 @@ import PremiumAirQualityChart from "./PremiumAirQualityChart";
 import HowItWorks from "./HowItWorks";
 import WhyItMatters from "./WhyItMatters";
 import AboutVayuKavach from "./AboutVayuKavach";
+import TeamSection from "./TeamSection";
 import Section from "./Section";
 import ParticleField from "./ParticleField";
 import AnimatedLogo from "./AnimatedLogo";
@@ -493,9 +494,7 @@ export default function LegacyLanding({
 
       <AboutVayuKavach />
 
-      <Section id="team" eyebrow="TEAM" title="Team">
-        Team cards can be reintroduced next.
-      </Section>
+      <TeamSection />
 
       <Section id="contact" eyebrow="CONTACT" title="Get in Touch">
         Contact form will be re-added next.
