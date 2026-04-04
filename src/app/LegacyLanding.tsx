@@ -7,6 +7,7 @@ import CountUp from "react-countup";
 import EfficiencyCard from "./EfficiencyCard";
 import PremiumAirQualityChart from "./PremiumAirQualityChart";
 import HowItWorks from "./HowItWorks";
+import WhyItMatters from "./WhyItMatters";
 import Section from "./Section";
 import ParticleField from "./ParticleField";
 import AnimatedLogo from "./AnimatedLogo";
@@ -483,9 +484,7 @@ export default function LegacyLanding({
         </div>
       </section>
 
-      <Section id="impact" eyebrow="WHY" title="Why it matters">
-        {status.desc}
-      </Section>
+      <WhyItMatters />
 
       <Section id="future" eyebrow="COMING SOON" title="Smart City Air Network">
         Expand to multiple nodes, longer history, and alerts.
