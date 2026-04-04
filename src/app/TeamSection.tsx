@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 type Member = {
   name: string;
@@ -8,6 +9,7 @@ type Member = {
   description: string;
   meta: string;
   accent: "green" | "cyan" | "violet" | "amber";
+  photoSrc: string;
 };
 
 const container = {
@@ -98,8 +100,10 @@ function TeamCard({ member, large }: { member: Member; large?: boolean }) {
           animate={{ y: [0, -3, 0] }}
           transition={{ duration: 3.4, repeat: Infinity, ease: "easeInOut" as any }}
         >
-          <div className="h-16 w-16 sm:h-18 sm:w-18 rounded-full bg-gradient-to-br from-white/10 to-white/5 p-[2px] shadow-[0_0_25px_rgba(16,185,129,0.12)]">
-            <div className={`grid h-full w-full place-items-center rounded-full bg-gradient-to-br ${t.avatar} text-black font-bold`}>{initials(member.name)}</div>
+          <div className="relative h-16 w-16 sm:h-[72px] sm:w-[72px] rounded-full bg-gradient-to-br from-white/10 to-white/5 p-[2px] shadow-[0_0_25px_rgba(16,185,129,0.12)]">
+            <div className="relative h-full w-full overflow-hidden rounded-full">
+              <Image src={member.photoSrc} alt={member.name} fill sizes="72px" className="object-cover" priority={!!large} />
+            </div>
           </div>
           <div className="pointer-events-none absolute inset-0 rounded-full blur-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: "radial-gradient(circle, rgba(16,185,129,0.25), transparent 60%)" }} />
         </motion.div>
@@ -133,6 +137,7 @@ export default function TeamSection() {
       description: "Leading full-stack development and ESP32 firmware integration for real-time system performance.",
       meta: "UG Student, CSE, MITS Gwalior",
       accent: "green",
+      photoSrc: "/team-aryan-kumar-bhargava.jpeg",
     },
     {
       name: "Tejaswa Singh Rana",
@@ -140,6 +145,7 @@ export default function TeamSection() {
       description: "Expert in sensor calibration, circuit design, and hardware integration.",
       meta: "UG Student, CSE, MITS Gwalior",
       accent: "cyan",
+      photoSrc: "/team-tejaswa-singh-rana.jpeg",
     },
   ];
 
@@ -150,6 +156,7 @@ export default function TeamSection() {
       description: "Managing system communication and assisting in hardware assembly and implementation.",
       meta: "UG Student, CSE, MITS Gwalior",
       accent: "violet",
+      photoSrc: "/team-vansh-trivedi.jpeg",
     },
     {
       name: "Vansh Shrivastava",
@@ -157,6 +164,7 @@ export default function TeamSection() {
       description: "Driving project ideas and overseeing practical implementation of hardware solutions.",
       meta: "UG Student, CSE, MITS Gwalior",
       accent: "amber",
+      photoSrc: "/team-vansh-shrivastava.jpeg",
     },
   ];
 
