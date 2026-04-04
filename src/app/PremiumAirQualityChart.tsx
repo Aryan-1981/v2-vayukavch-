@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -75,6 +75,10 @@ function CustomTooltip({
   );
 }
 
+function clamp(n: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, n));
+}
+
 export default function PremiumAirQualityChart({
   data,
   height = 320,
@@ -88,6 +92,8 @@ export default function PremiumAirQualityChart({
 }) {
   const safeData = useMemo(() => clampChartData(data), [data]);
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
+  const [mouseX, setMouseX] = useState<number | null>(null);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
 
   // Dynamic domain with headroom (keeps it premium + uncluttered)
   const domain = useMemo(() => {
@@ -136,6 +142,28 @@ export default function PremiumAirQualityChart({
       >
         {/* Soft shadow under plot */}
         <div aria-hidden className="pointer-events-none absolute inset-x-6 bottom-2 h-12 bg-black/40 blur-2xl" />
+
+        {/* Magnetic cursor overlay (smoother than Recharts' default cursor) */}
+        <div
+          ref={overlayRef}
+          aria-hidden
+          className="pointer-events-auto absolute inset-0 z-20"
+          onMouseMove={(e) => {
+            const el = overlayRef.current;
+            if (!el) return;
+            const r = el.getBoundingClientRect();
+            const x = e.clientX - r.left;
+            setMouseX(clamp(x, 0, r.width));
+          }}
+          onMouseLeave={() => setMouseX(null)}
+        >
+          {mouseX != null ? (
+            <div
+              className="absolute top-3 bottom-7 w-px bg-gradient-to-b from-white/0 via-white/20 to-white/0"
+              style={{ left: mouseX }}
+            />
+          ) : null}
+        </div>
 
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
@@ -211,10 +239,8 @@ export default function PremiumAirQualityChart({
               dx={-6}
             />
 
-            {activeLabel ? <ReferenceLine x={activeLabel} stroke="rgba(255,255,255,0.14)" /> : null}
-
             <Tooltip
-              cursor={{ stroke: "rgba(255,255,255,0.12)", strokeWidth: 1 }}
+              cursor={false}
               content={<CustomTooltip />}
             />
 
