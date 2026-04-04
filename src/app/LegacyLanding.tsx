@@ -5,6 +5,7 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
 import EfficiencyCard from "./EfficiencyCard";
+import PremiumAirQualityChart from "./PremiumAirQualityChart";
 import Section from "./Section";
 import ParticleField from "./ParticleField";
 import AnimatedLogo from "./AnimatedLogo";
@@ -449,42 +450,7 @@ export default function LegacyLanding({
 
           <EfficiencyCard outerPM={outer?.pm25 ?? null} purifiedPM={purified?.pm25 ?? null} />
 
-          <div className="rounded-3xl p-6 md:p-8 border border-white/10 bg-white/5 mt-8">
-            <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
-              <span className="w-1 h-6 bg-green-500 rounded-full" />
-              Outdoor Trends (Baseline) - PM2.5 & PM10
-            </h3>
-            <div className="h-[240px] sm:h-[320px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={outerHistory}>
-                  <defs>
-                    <linearGradient id="colorPM25" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f97316" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="colorPM10" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#ec4899" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#ec4899" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} opacity={0.3} />
-                  <XAxis dataKey="time" stroke="#666" tick={{ fill: "#666", fontSize: 12 }} tickLine={false} axisLine={false} dy={10} />
-                  <YAxis stroke="#666" tick={{ fill: "#666", fontSize: 12 }} tickLine={false} axisLine={false} dx={-10} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "rgba(0,0,0,0.9)",
-                      backdropFilter: "blur(10px)",
-                      border: "1px solid #222",
-                      borderRadius: "12px",
-                    }}
-                    itemStyle={{ color: "#fff" }}
-                  />
-                  <Area type="monotone" dataKey="PM2_5" stroke="#f97316" strokeWidth={3} fillOpacity={1} fill="url(#colorPM25)" />
-                  <Area type="monotone" dataKey="PM10" stroke="#ec4899" strokeWidth={3} fillOpacity={1} fill="url(#colorPM10)" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+          <PremiumAirQualityChart data={outerHistory} height={320} title="Outdoor Trends (Baseline)" subtitle="PM2.5 vs PM10" />
         </div>
       </section>
 
