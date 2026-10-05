@@ -10,7 +10,7 @@ export type LatestReading = {
 
 export async function getLatest(device_id: LatestReading["device_id"]) {
   const { data, error } = await supabaseServer
-    .from("air_readings")
+    .from("air_data")
     .select("device_id, pm1, pm25, pm10, created_at")
     .eq("device_id", device_id)
     .order("created_at", { ascending: false })
