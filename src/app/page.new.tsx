@@ -49,7 +49,9 @@ function Stat(props: { label: string; value: string; tint: string }) {
 }
 
 export default async function Home() {
-  const [outer, purified] = await Promise.all([getLatest("outer"), getLatest("purified")]);
+  const [outer, purified] = await Promise.all([getLatest("outer"), getLatest("purified")]).catch(
+    () => [null, null] as const
+  );
 
   return (
     <div className="space-y-20">

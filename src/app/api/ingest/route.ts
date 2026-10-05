@@ -38,10 +38,17 @@ export async function POST(req: Request) {
     );
   }
 
+  const payload = {
+    device: parsed.data.device_id === "outer" ? "outer" : "inner",
+    pm1: parsed.data.pm1,
+    pm25: parsed.data.pm25,
+    pm10: parsed.data.pm10,
+  };
+
   const { data, error } = await supabaseServer
     .from("air_data")
-    .insert(parsed.data)
-    .select("id, created_at")
+    .insert(payload)
+    .select("id, device, created_at")
     .single();
 
   if (error) {
