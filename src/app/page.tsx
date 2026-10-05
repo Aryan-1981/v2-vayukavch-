@@ -5,7 +5,9 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function Page() {
-  const [initialOuter, initialPurified] = await Promise.all([getLatest("outer"), getLatest("purified")]);
+  const [initialOuter, initialPurified] = await Promise.all([getLatest("outer"), getLatest("purified")]).catch(
+    () => [null, null] as const
+  );
 
   return <LegacyLanding initialOuter={initialOuter} initialPurified={initialPurified} refreshMs={5000} />;
 }

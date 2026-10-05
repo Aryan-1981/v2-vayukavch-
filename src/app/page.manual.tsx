@@ -82,7 +82,9 @@ function Nav() {
 }
 
 export default async function Page() {
-  const [initialOuter, initialPurified] = await Promise.all([getLatest("outer"), getLatest("purified")]);
+  const [initialOuter, initialPurified] = await Promise.all([getLatest("outer"), getLatest("purified")]).catch(
+    () => [null, null] as const
+  );
 
   return (
     <main className="vk-bg relative">

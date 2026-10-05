@@ -18,7 +18,7 @@ import PurifierLogo from "./PurifierLogo";
 type DeviceId = "outer" | "purified";
 
 type LatestReading = {
-  device_id: DeviceId;
+  device: "outer" | "inner";
   pm1: number | null;
   pm25: number | null;
   pm10: number | null;
@@ -40,6 +40,7 @@ function formatTimeLabel(iso: string) {
 
 function calcEfficiency(outdoorPm25: number | null, purifiedPm25: number | null) {
   if (outdoorPm25 == null || purifiedPm25 == null) return null;
+  if (!Number.isFinite(outdoorPm25) || !Number.isFinite(purifiedPm25)) return null;
   if (outdoorPm25 <= 0) return null;
   return ((outdoorPm25 - purifiedPm25) / outdoorPm25) * 100;
 }
