@@ -48,7 +48,7 @@ export async function POST(req: Request) {
 
   const { data, error } = await supabaseServer
     .from("air_data")
-    .insert(parsed.data)
+    .insert(parsed.data as never)
     .select("id, created_at")
     .single();
 
