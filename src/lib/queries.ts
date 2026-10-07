@@ -1,4 +1,5 @@
-import { supabaseServer } from "@/lib/supabase-server";
+import { z } from "zod";
+import { getSupabaseServer } from "@/lib/supabase-server";
 
 export type LatestReading = {
   device_id: "outer" | "purified";
@@ -8,7 +9,18 @@ export type LatestReading = {
   created_at: string;
 };
 
+const latestReadingSchema = z.object({
+  device_id: z.enum(["outer", "purified"]),
+  pm1: z.number().nullable(),
+  pm25: z.number().nullable(),
+  pm10: z.number().nullable(),
+  created_at: z.string(),
+});
+
 export async function getLatest(device_id: LatestReading["device_id"]) {
+  const supabaseServer = getSupabaseServer();
+  if (!supabaseServer) return null;
+
   const { data, error } = await supabaseServer
     .from("air_data")
     .select("device_id, pm1, pm25, pm10, created_at")
@@ -17,6 +29,12 @@ export async function getLatest(device_id: LatestReading["device_id"]) {
     .limit(1)
     .maybeSingle();
 
-  if (error) throw new Error(error.message);
-  return (data ?? null) as LatestReading | null;
+  if (error) {
+    console.error("Failed to fetch latest reading", error.message);
+    return null;
+  }
+
+  const parsed = latestReadingSchema.safeParse(data);
+  if (!parsed.success) return null;
+  return parsed.data;
 }

@@ -1,13 +1,22 @@
 import { z } from "zod";
 
-const envSchema = z.object({
+const supabaseEnvSchema = z.object({
   SUPABASE_URL: z.string().url(),
   SUPABASE_SECRET_KEY: z.string().min(10),
-  INGEST_TOKEN: z.string().min(8),
 });
 
-export const env = envSchema.parse({
-  SUPABASE_URL: process.env.SUPABASE_URL,
-  SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
-  INGEST_TOKEN: process.env.INGEST_TOKEN,
-});
+const ingestTokenSchema = z.string().min(8);
+
+export function getSupabaseEnv() {
+  const parsed = supabaseEnvSchema.safeParse({
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
+  });
+
+  return parsed.success ? parsed.data : null;
+}
+
+export function getIngestToken() {
+  const parsed = ingestTokenSchema.safeParse(process.env.INGEST_TOKEN);
+  return parsed.success ? parsed.data : null;
+}

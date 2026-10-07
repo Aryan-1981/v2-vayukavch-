@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { env } from "@/lib/env";
-import { supabaseServer } from "@/lib/supabase-server";
+import { getIngestToken } from "@/lib/env";
+import { getSupabaseServer } from "@/lib/supabase-server";
 
 export const runtime = "nodejs";
 
@@ -13,12 +13,20 @@ const payloadSchema = z.object({
 });
 
 function isAuthorized(req: Request) {
+  const ingestToken = getIngestToken();
+  if (!ingestToken) return false;
+
   const auth = req.headers.get("authorization") || "";
-  const expected = `Bearer ${env.INGEST_TOKEN}`;
+  const expected = ["Bearer", ingestToken].join(" ");
   return auth === expected;
 }
 
 export async function POST(req: Request) {
+  const supabaseServer = getSupabaseServer();
+  if (!supabaseServer) {
+    return NextResponse.json({ error: "Server not configured" }, { status: 500 });
+  }
+
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -40,7 +48,7 @@ export async function POST(req: Request) {
 
   const { data, error } = await supabaseServer
     .from("air_data")
-    .insert(parsed.data)
+    .insert(parsed.data as never)
     .select("id, created_at")
     .single();
 
