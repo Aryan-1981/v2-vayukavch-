@@ -82,7 +82,7 @@ function Nav() {
 }
 
 export default async function Page() {
-  const [initialOuter, initialPurified] = await Promise.all([getLatest("outer"), getLatest("purified")]);
+  const [initialOuter, initialInner] = await Promise.all([getLatest("outer"), getLatest("inner")]);
 
   return (
     <main className="vk-bg relative">
@@ -99,7 +99,7 @@ export default async function Page() {
               Breathe <span className="vk-gradient-text">cleaner air</span>.
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/70 sm:text-base">
-              Two devices—<span className="text-white">Outdoor</span> and <span className="text-white">Purified</span>—
+              Two devices—<span className="text-white">Outdoor</span> and <span className="text-white">Clean Outlet</span>—
               live-updating every few seconds.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
@@ -130,16 +130,16 @@ export default async function Page() {
           <div className="vk-glass rounded-3xl p-6 sm:p-10">
             <div className="text-xs font-semibold tracking-[0.28em] text-white/55">LIVE</div>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
-              <span className="vk-gradient-text">Outdoor vs Purified</span> (V2)
+              <span className="vk-gradient-text">Outdoor vs Clean Outlet</span> (V2)
             </h2>
             <p className="mt-3 max-w-2xl text-sm text-white/70">
               Devices: <span className="font-semibold text-white">outer</span> &{" "}
-              <span className="font-semibold text-white">purified</span>. Includes a PM2.5 comparison chart and
+              <span className="font-semibold text-white">inner</span>. Includes a PM2.5 comparison chart and
               purification efficiency.
             </p>
 
             <div className="mt-8">
-              <LiveCards initialOuter={initialOuter} initialPurified={initialPurified} refreshMs={5000} />
+              <LiveCards initialOuter={initialOuter} initialInner={initialInner} refreshMs={5000} />
             </div>
           </div>
         </div>
@@ -160,7 +160,7 @@ export default async function Page() {
       </Section>
 
       <Section id="about" eyebrow="PROJECT" title="About">
-        This recreates a single-page flow while modernizing the data layer for V2 (outer/purified) with safe server-side
+        This recreates a single-page flow while modernizing the data layer for V2 (outer/inner) with safe server-side
         access.
       </Section>
 
@@ -178,7 +178,7 @@ export default async function Page() {
           <div>
             © {new Date().getFullYear()} <span className="text-white/70">VayuKavach</span>
           </div>
-          <div className="font-mono">live: /api/latest?device_id=outer|purified</div>
+          <div className="font-mono">live: /api/latest?device=outer|inner</div>
         </div>
       </div>
     </main>
