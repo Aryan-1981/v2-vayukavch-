@@ -49,7 +49,7 @@ function Stat(props: { label: string; value: string; tint: string }) {
 }
 
 export default async function Home() {
-  const [outer, purified] = await Promise.all([getLatest("outer"), getLatest("purified")]);
+  const [outer, inner] = await Promise.all([getLatest("outer"), getLatest("inner")]);
 
   return (
     <div className="space-y-20">
@@ -60,7 +60,7 @@ export default async function Home() {
               <div>
                 <div className="inline-flex items-center gap-2 vk-pill rounded-full px-3 py-1 text-[11px] font-medium tracking-wide">
                   <span className="inline-block size-1.5 rounded-full bg-emerald-400" />
-                  REAL‑TIME • V2 • OUTDOOR vs PURIFIED
+                  REAL‑TIME • V2 • OUTDOOR vs CLEAN OUTLET
                 </div>
 
                 <h1 className="mt-5 text-3xl font-semibold tracking-tight sm:text-6xl">
@@ -99,14 +99,14 @@ export default async function Home() {
                   <div className="text-xs text-white/50">Devices</div>
                   <div className="mt-2 grid grid-cols-2 gap-3">
                     <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                      <div className="text-xs text-white/50">device_id</div>
+                      <div className="text-xs text-white/50">device</div>
                       <div className="mt-1 font-mono text-xs text-white/80">outer</div>
                       <div className="mt-1 text-xs text-white/55">Outdoor sensor</div>
                     </div>
                     <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                      <div className="text-xs text-white/50">device_id</div>
-                      <div className="mt-1 font-mono text-xs text-white/80">purified</div>
-                      <div className="mt-1 text-xs text-white/55">Purified output</div>
+                      <div className="text-xs text-white/50">device</div>
+                      <div className="mt-1 font-mono text-xs text-white/80">inner</div>
+                      <div className="mt-1 text-xs text-white/55">Filtered outlet</div>
                     </div>
                   </div>
                 </div>
@@ -114,7 +114,7 @@ export default async function Home() {
                 <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
                   <div className="text-xs text-white/50">Ingest</div>
                   <div className="mt-2 font-mono text-xs break-all text-white/80">POST /api/ingest</div>
-                  <div className="mt-1 text-xs text-white/55">JSON: device_id (outer|purified), pm1, pm25, pm10</div>
+                  <div className="mt-1 text-xs text-white/55">JSON: device (outer|inner; legacy device_id also accepted), pm1, pm25, pm10</div>
                 </div>
 
                 <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
@@ -151,17 +151,17 @@ export default async function Home() {
             Measure → Purify → <span className="vk-gradient-text">Verify</span>
           </>
         }
-        subtitle="Two sensors (outer/purified) enable direct comparison and a live purification efficiency score."
+        subtitle="Two sensors (outer/inner) enable direct comparison and a live purification efficiency score."
       >
         <div className="grid gap-4 md:grid-cols-2">
           <Card title="Outdoor sensor (outer)" desc="Tracks ambient particulate baseline in real time." />
-          <Card title="Purified sensor (purified)" desc="Measures post-filtration air output for proof-of-performance." />
+          <Card title="Inner sensor (inner)" desc="Measures post-filtration air output for proof-of-performance." />
         </div>
 
         <div className="mt-4 vk-glass rounded-2xl p-5">
           <div className="text-sm font-semibold">Efficiency formula</div>
           <div className="mt-2 text-xs leading-relaxed text-white/60">
-            <span className="font-mono text-white/80">((Outdoor PM2.5 − Purified PM2.5) / Outdoor PM2.5) × 100</span>
+            <span className="font-mono text-white/80">((Outer PM2.5 − Inner PM2.5) / Outer PM2.5) × 100</span>
           </div>
         </div>
       </Section>
@@ -172,7 +172,7 @@ export default async function Home() {
             <div>
               <div className="vk-pill inline-flex rounded-full px-3 py-1 text-[11px] font-medium">LIVE</div>
               <h2 className="mt-3 text-2xl font-semibold tracking-tight">
-                Live Dashboard – <span className="text-emerald-200">Outdoor vs Purified</span>
+                Live Dashboard – <span className="text-emerald-200">Outdoor vs Clean Outlet</span>
               </h2>
               <p className="mt-1 text-sm text-white/55">Auto-refreshing, includes PM2.5 comparison graph + efficiency.</p>
             </div>
@@ -182,7 +182,7 @@ export default async function Home() {
           </div>
 
           <div className="mt-4 vk-glass rounded-3xl p-6">
-            <LiveCards initialOuter={outer} initialPurified={purified} refreshMs={5000} />
+            <LiveCards initialOuter={outer} initialInner={inner} refreshMs={5000} />
           </div>
         </div>
       </section>
@@ -194,7 +194,7 @@ export default async function Home() {
             Better decisions with <span className="text-emerald-200">real-time proof</span>
           </>
         }
-        subtitle="See baseline and purified output together to validate filtration and placement."
+        subtitle="See baseline and filtered output together to validate filtration and placement."
       >
         <div className="grid gap-4 md:grid-cols-3">
           <Card title="Operational proof" desc="Verify purifier performance under current outdoor conditions." />
@@ -263,8 +263,8 @@ export default async function Home() {
             </div>
             <div>
               <div className="text-xs text-white/50">API</div>
-              <div className="mt-1 font-mono text-xs text-white/80">GET /api/latest?device_id=outer</div>
-              <div className="mt-1 font-mono text-xs text-white/80">GET /api/latest?device_id=purified</div>
+              <div className="mt-1 font-mono text-xs text-white/80">GET /api/latest?device=outer</div>
+              <div className="mt-1 font-mono text-xs text-white/80">GET /api/latest?device=inner</div>
             </div>
           </div>
         </div>
