@@ -6,33 +6,43 @@ import CountUp from "react-countup";
 
 interface EfficiencyCardProps {
   outerPM: number | null;
-  purifiedPM: number | null;
+  outletPM: number | null;
 }
 
-export default function EfficiencyCard({ outerPM, purifiedPM }: EfficiencyCardProps) {
+export default function EfficiencyCard({ outerPM, outletPM }: EfficiencyCardProps) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  let efficiency = 0;
-  if (outerPM !== null && purifiedPM !== null && outerPM > 0) {
-    efficiency = ((outerPM - purifiedPM) / outerPM) * 100;
-  }
-  efficiency = Math.max(0, Math.min(100, Math.round(efficiency)));
+  const hasReading =
+    outerPM != null &&
+    outletPM != null &&
+    Number.isFinite(outerPM) &&
+    Number.isFinite(outletPM) &&
+    outerPM > 0;
+  const efficiency = hasReading
+    ? Math.max(0, Math.min(100, Math.round(((outerPM - outletPM) / outerPM) * 100)))
+    : null;
 
-  let color = "#ff4d4f"; // Red
-  let glowClass = "shadow-[0_0_20px_rgba(255,77,79,0.3)]";
-  
-  if (efficiency >= 70) {
-    color = "#00c853"; // Green
-    glowClass = "shadow-[0_0_20px_rgba(0,200,83,0.4)] animate-[pulse_3s_ease-in-out_infinite]";
-  } else if (efficiency >= 40) {
-    color = "#fadb14"; // Yellow
-    glowClass = "shadow-[0_0_20px_rgba(250,219,20,0.3)]";
+  let color = "#9ca3af";
+  let glowClass = "shadow-[0_0_20px_rgba(156,163,175,0.2)]";
+
+  if (efficiency != null) {
+    color = "#ff4d4f"; // Red
+    glowClass = "shadow-[0_0_20px_rgba(255,77,79,0.3)]";
+
+    if (efficiency >= 70) {
+      color = "#00c853"; // Green
+      glowClass = "shadow-[0_0_20px_rgba(0,200,83,0.4)] animate-[pulse_3s_ease-in-out_infinite]";
+    } else if (efficiency >= 40) {
+      color = "#fadb14"; // Yellow
+      glowClass = "shadow-[0_0_20px_rgba(250,219,20,0.3)]";
+    }
   }
 
   const radius = 64;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (efficiency / 100) * circumference;
+  const strokeDashoffset =
+    efficiency == null ? circumference : circumference - (efficiency / 100) * circumference;
 
   if (!mounted) return null;
 
@@ -93,14 +103,24 @@ export default function EfficiencyCard({ outerPM, purifiedPM }: EfficiencyCardPr
           />
         </svg>
         <div className="absolute flex flex-col items-center justify-center">
-          <span 
-            className="text-5xl font-black text-white tracking-tighter" 
-            style={{ textShadow: `0 0 24px ${color}` }}
-          >
-            <CountUp end={efficiency} duration={2.5} preserveValue />%
-          </span>
+          {efficiency == null ? (
+            <span className="text-4xl font-black text-white/50 tracking-tighter">--</span>
+          ) : (
+            <span
+              className="text-5xl font-black text-white tracking-tighter"
+              style={{ textShadow: `0 0 24px ${color}` }}
+            >
+              <CountUp end={efficiency} duration={2.5} preserveValue />%
+            </span>
+          )}
         </div>
       </div>
+
+      {efficiency == null ? (
+        <p className="mt-6 z-10 text-center text-xs font-medium text-amber-200/80">
+          Waiting for valid inlet &amp; outlet readings
+        </p>
+      ) : null}
     </motion.div>
   );
 }
