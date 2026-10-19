@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "VayuKavach V2 – Smart Air Protection System",
-  description: "Real-time air quality monitoring dashboard (Outdoor vs Purified) with performance insights.",
+  description: "Real-time air quality monitoring dashboard (Outdoor vs Clean Outlet) with performance insights.",
 };
 
 export default function RootLayout({
