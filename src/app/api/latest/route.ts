@@ -17,6 +17,11 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Invalid device_id" }, { status: 400 });
   }
 
-  const reading = await getLatest(parsed.data.device_id);
-  return NextResponse.json({ reading });
+  try {
+    const reading = await getLatest(parsed.data.device_id);
+    return NextResponse.json({ reading });
+  } catch (error) {
+    console.error("[api/latest] Supabase query failed", error);
+    return NextResponse.json({ error: "Unable to load sensor data" }, { status: 500 });
+  }
 }
