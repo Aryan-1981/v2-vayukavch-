@@ -3,37 +3,42 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
+import type { LatestReading } from "@/lib/queries";
+import { describeReadingAge, isReadingFresh, pmEfficiency } from "@/lib/readings";
 
 interface EfficiencyCardProps {
-  outerPM: number | null;
-  outletPM: number | null;
+  outer: LatestReading | null;
+  inner: LatestReading | null;
 }
 
-export default function EfficiencyCard({ outerPM, outletPM }: EfficiencyCardProps) {
+function ageText(reading: LatestReading | null, fresh: boolean) {
+  if (!reading) return "no data";
+  const age = describeReadingAge(reading);
+  return fresh ? age : `${age} (stale)`;
+}
+
+export default function EfficiencyCard({ outer, inner }: EfficiencyCardProps) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const hasReading =
-    outerPM != null &&
-    outletPM != null &&
-    Number.isFinite(outerPM) &&
-    Number.isFinite(outletPM) &&
-    outerPM > 0;
-  const efficiency = hasReading
-    ? Math.max(0, Math.min(100, Math.round(((outerPM - outletPM) / outerPM) * 100)))
-    : null;
+  const outerFresh = isReadingFresh(outer);
+  const innerFresh = isReadingFresh(inner);
+  const readingsFresh = outerFresh && innerFresh;
+
+  const pm25Efficiency = readingsFresh ? pmEfficiency(outer?.pm25, inner?.pm25) : null;
+  const pm10Efficiency = readingsFresh ? pmEfficiency(outer?.pm10, inner?.pm10) : null;
 
   let color = "#9ca3af";
   let glowClass = "shadow-[0_0_20px_rgba(156,163,175,0.2)]";
 
-  if (efficiency != null) {
+  if (pm25Efficiency != null) {
     color = "#ff4d4f"; // Red
     glowClass = "shadow-[0_0_20px_rgba(255,77,79,0.3)]";
 
-    if (efficiency >= 70) {
+    if (pm25Efficiency >= 70) {
       color = "#00c853"; // Green
       glowClass = "shadow-[0_0_20px_rgba(0,200,83,0.4)] animate-[pulse_3s_ease-in-out_infinite]";
-    } else if (efficiency >= 40) {
+    } else if (pm25Efficiency >= 40) {
       color = "#fadb14"; // Yellow
       glowClass = "shadow-[0_0_20px_rgba(250,219,20,0.3)]";
     }
@@ -42,7 +47,16 @@ export default function EfficiencyCard({ outerPM, outletPM }: EfficiencyCardProp
   const radius = 64;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset =
-    efficiency == null ? circumference : circumference - (efficiency / 100) * circumference;
+    pm25Efficiency == null ? circumference : circumference - (pm25Efficiency / 100) * circumference;
+
+  const notice =
+    outer == null && inner == null
+      ? "Waiting for inlet & outlet readings"
+      : !readingsFresh
+        ? "Live efficiency paused — readings are stale"
+        : pm25Efficiency == null
+          ? "Waiting for valid inlet & outlet readings"
+          : null;
 
   if (!mounted) return null;
 
@@ -103,24 +117,40 @@ export default function EfficiencyCard({ outerPM, outletPM }: EfficiencyCardProp
           />
         </svg>
         <div className="absolute flex flex-col items-center justify-center">
-          {efficiency == null ? (
+          {pm25Efficiency == null ? (
             <span className="text-4xl font-black text-white/50 tracking-tighter">--</span>
           ) : (
             <span
               className="text-5xl font-black text-white tracking-tighter"
               style={{ textShadow: `0 0 24px ${color}` }}
             >
-              <CountUp end={efficiency} duration={2.5} preserveValue />%
+              <CountUp end={pm25Efficiency} decimals={1} duration={2.5} preserveValue />%
             </span>
           )}
+          <span className="mt-2 text-[10px] font-semibold uppercase tracking-widest text-white/40">
+            PM2.5
+          </span>
         </div>
       </div>
 
-      {efficiency == null ? (
-        <p className="mt-6 z-10 text-center text-xs font-medium text-amber-200/80">
-          Waiting for valid inlet &amp; outlet readings
+      {pm25Efficiency != null ? (
+        <p className="mt-6 z-10 text-center text-sm text-white/50">
+          PM10 filtration:{" "}
+          <span className="font-semibold text-white/85">
+            {pm10Efficiency == null ? "—" : `${pm10Efficiency.toFixed(1)}%`}
+          </span>
         </p>
       ) : null}
+
+      {notice ? (
+        <p className="mt-6 z-10 text-center text-xs font-medium text-amber-200/80">{notice}</p>
+      ) : null}
+
+      <p className="mt-3 z-10 text-center text-[11px] text-white/45">
+        Outdoor {ageText(outer, outerFresh)}
+        <span className="mx-1.5 text-white/20">·</span>
+        Outlet {ageText(inner, innerFresh)}
+      </p>
     </motion.div>
   );
 }
