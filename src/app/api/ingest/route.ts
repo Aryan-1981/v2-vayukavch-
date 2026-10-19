@@ -38,14 +38,16 @@ export async function POST(req: Request) {
     );
   }
 
+  const { device_id, pm1, pm25, pm10 } = parsed.data;
   const { data, error } = await supabaseServer
     .from("air_data")
-    .insert(parsed.data)
+    .insert({ device: device_id, pm1, pm25, pm10 })
     .select("id, created_at")
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("[api/ingest] Supabase insert failed", error);
+    return NextResponse.json({ error: "Unable to store sensor data" }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true, inserted: data });
