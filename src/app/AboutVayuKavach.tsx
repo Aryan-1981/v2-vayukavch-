@@ -149,7 +149,7 @@ export default function AboutVayuKavach() {
               </FloatingIcon>
             }
             title="Dual Air Monitoring"
-            text="Two PMS7003 sensors measure both polluted and purified air, providing real-time proof of effectiveness."
+            text="Two PMS7003 sensors measure both polluted and filtered air, providing real-time proof of effectiveness."
           />
 
           <Card
