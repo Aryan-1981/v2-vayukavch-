@@ -14,16 +14,7 @@ import Section from "./Section";
 import ParticleField from "./ParticleField";
 import AnimatedLogo from "./AnimatedLogo";
 import PurifierLogo from "./PurifierLogo";
-
-type DeviceId = "outer" | "purified";
-
-type LatestReading = {
-  device_id: DeviceId;
-  pm1: number | null;
-  pm25: number | null;
-  pm10: number | null;
-  created_at: string;
-};
+import type { DeviceLabel, LatestReading } from "@/lib/queries";
 
 type HistoryPoint = {
   time: string;
@@ -38,10 +29,32 @@ function formatTimeLabel(iso: string) {
   return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
-function calcEfficiency(outdoorPm25: number | null, purifiedPm25: number | null) {
-  if (outdoorPm25 == null || purifiedPm25 == null) return null;
-  if (outdoorPm25 <= 0) return null;
-  return ((outdoorPm25 - purifiedPm25) / outdoorPm25) * 100;
+const READING_MAX_AGE_MS = 30_000;
+
+function isFresh(reading: LatestReading | null, maxAgeMs = READING_MAX_AGE_MS): reading is LatestReading {
+  if (!reading) return false;
+  const timestamp = Date.parse(reading.created_at);
+  if (!Number.isFinite(timestamp)) return false;
+  return Date.now() - timestamp <= maxAgeMs;
+}
+
+function calcEfficiency(inlet: LatestReading | null, outlet: LatestReading | null) {
+  if (!isFresh(inlet) || !isFresh(outlet)) return null;
+
+  const inletPm25 = inlet.pm25;
+  const outletPm25 = outlet.pm25;
+
+  if (
+    inletPm25 == null ||
+    outletPm25 == null ||
+    !Number.isFinite(inletPm25) ||
+    !Number.isFinite(outletPm25) ||
+    inletPm25 <= 0
+  ) {
+    return null;
+  }
+
+  return ((inletPm25 - outletPm25) / inletPm25) * 100;
 }
 
 function aqiStatus(pm25: number | null) {
@@ -69,8 +82,8 @@ const staggerContainer = {
   }
 };
 
-async function fetchLatest(device_id: DeviceId) {
-  const res = await fetch(`/api/latest?device_id=${device_id}`, { cache: "no-store" });
+async function fetchLatest(device: DeviceLabel) {
+  const res = await fetch(`/api/latest?device=${device}`, { cache: "no-store" });
   if (!res.ok) throw new Error(await res.text());
   const json = (await res.json()) as { reading: LatestReading | null };
   return json.reading;
@@ -78,15 +91,15 @@ async function fetchLatest(device_id: DeviceId) {
 
 export default function LegacyLanding({
   initialOuter,
-  initialPurified,
+  initialInner,
   refreshMs = 5000,
 }: {
   initialOuter: LatestReading | null;
-  initialPurified: LatestReading | null;
+  initialInner: LatestReading | null;
   refreshMs?: number;
 }) {
   const [outer, setOuter] = useState<LatestReading | null>(initialOuter);
-  const [purified, setPurified] = useState<LatestReading | null>(initialPurified);
+  const [inner, setInner] = useState<LatestReading | null>(initialInner);
   const [outerHistory, setOuterHistory] = useState<HistoryPoint[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -95,8 +108,8 @@ export default function LegacyLanding({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>({});
 
-  const efficiency = useMemo(() => calcEfficiency(outer?.pm25 ?? null, purified?.pm25 ?? null), [outer, purified]);
-  const status = useMemo(() => aqiStatus(purified?.pm25 ?? null), [purified?.pm25]);
+  const efficiency = useMemo(() => calcEfficiency(outer, inner), [outer, inner]);
+  const status = useMemo(() => aqiStatus(inner?.pm25 ?? null), [inner?.pm25]);
 
   // Intersection observer for reveals
   useEffect(() => {
@@ -146,11 +159,11 @@ export default function LegacyLanding({
 
     async function tick() {
       try {
-        const [o, p] = await Promise.all([fetchLatest("outer"), fetchLatest("purified")]);
+        const [o, i] = await Promise.all([fetchLatest("outer"), fetchLatest("inner")]);
         if (cancelled) return;
 
         setOuter(o);
-        setPurified(p);
+        setInner(i);
         setError(null);
 
         if (o) {
@@ -414,7 +427,7 @@ export default function LegacyLanding({
               </span>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Purification Performance</h2>
               <p className="text-sm sm:text-base text-gray-400">
-                Outdoor baseline vs purified outlet. Updates every {Math.round(refreshMs / 1000)}s.
+                Outdoor baseline vs clean outlet. Updates every {Math.round(refreshMs / 1000)}s.
               </p>
             </div>
             <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-400 border border-white/10 bg-white/5 px-3 py-1 rounded-full">
@@ -432,8 +445,8 @@ export default function LegacyLanding({
               </div>
 
               <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
-                <div className="text-sm sm:text-base text-gray-400">Purified PM2.5</div>
-                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{purified?.pm25 != null ? <CountUp end={purified.pm25} decimals={1} duration={1.5} preserveValue /> : "--"}</div>
+                <div className="text-sm sm:text-base text-gray-400">Clean Outlet PM2.5</div>
+                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{inner?.pm25 != null ? <CountUp end={inner.pm25} decimals={1} duration={1.5} preserveValue /> : "--"}</div>
                 <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
                 <div className={`mt-2 sm:mt-3 text-sm font-medium ${status.color}`}>{status.text}</div>
               </div>
@@ -445,14 +458,17 @@ export default function LegacyLanding({
               </div>
 
               <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
-                <div className="text-sm sm:text-base text-gray-400">Purified PM10</div>
-                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{purified?.pm10 != null ? <CountUp end={purified.pm10} decimals={1} duration={1.5} preserveValue /> : "--"}</div>
+                <div className="text-sm sm:text-base text-gray-400">Clean Outlet PM10</div>
+                <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{inner?.pm10 != null ? <CountUp end={inner.pm10} decimals={1} duration={1.5} preserveValue /> : "--"}</div>
                 <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
               </div>
             </div>
           </div>
 
-          <EfficiencyCard outerPM={outer?.pm25 ?? null} purifiedPM={purified?.pm25 ?? null} />
+          <EfficiencyCard
+            outerPM={isFresh(outer) ? outer?.pm25 ?? null : null}
+            outletPM={isFresh(inner) ? inner?.pm25 ?? null : null}
+          />
 
           <div className="mt-10 sm:mt-12">
             <PremiumAirQualityChart data={outerHistory} height={320} title="Outdoor Trends (Baseline)" subtitle="PM2.5 vs PM10" />
@@ -480,7 +496,7 @@ export default function LegacyLanding({
               { title: "Filtration", description: "Air passes through a multi-stage filtration stack designed to trap PM2.5 and PM10." },
               { title: "PM7003 Sensor", description: "A sensor measures particulate levels on the outlet path for verified performance." },
               { title: "Blower Fan", description: "A controlled fan maintains steady flow across the filters and through the device." },
-              { title: "Clean Air Out", description: "Purified air is released back into the environment—measurable and repeatable." },
+              { title: "Clean Air Out", description: "Filtered air is released back into the environment—measurable and repeatable." },
             ]}
           />
         </div>
