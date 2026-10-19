@@ -6,7 +6,8 @@ import { supabaseServer } from "@/lib/supabase-server";
 export const runtime = "nodejs";
 
 const payloadSchema = z.object({
-  device_id: z.enum(["outer", "purified"]),
+  device: z.enum(["inner", "outer"]).optional(),
+  device_id: z.enum(["inner", "outer"]).optional(),
   pm1: z.number().int().nonnegative().optional(),
   pm25: z.number().int().nonnegative().optional(),
   pm10: z.number().int().nonnegative().optional(),
@@ -38,16 +39,45 @@ export async function POST(req: Request) {
     );
   }
 
-  const { device_id, pm1, pm25, pm10 } = parsed.data;
+  const device = parsed.data.device ?? parsed.data.device_id;
+  if (!device) {
+    return NextResponse.json(
+      { error: "Missing device. Send \"device\" or legacy \"device_id\" (inner|outer)" },
+      { status: 400 }
+    );
+  }
+
+  if (
+    parsed.data.pm1 === undefined &&
+    parsed.data.pm25 === undefined &&
+    parsed.data.pm10 === undefined
+  ) {
+    return NextResponse.json(
+      { error: "At least one of pm1, pm25, pm10 is required" },
+      { status: 400 }
+    );
+  }
+
   const { data, error } = await supabaseServer
     .from("air_data")
-    .insert({ device: device_id, pm1, pm25, pm10 })
-    .select("id, created_at")
+    .insert({
+      device,
+      pm1: parsed.data.pm1,
+      pm25: parsed.data.pm25,
+      pm10: parsed.data.pm10,
+    })
+    .select("id, device, created_at")
     .single();
 
   if (error) {
-    console.error("[api/ingest] Supabase insert failed", error);
-    return NextResponse.json({ error: "Unable to store sensor data" }, { status: 500 });
+    console.error("[api/ingest] Insert into air_data failed:", {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+      device,
+    });
+    return NextResponse.json({ error: "Failed to store reading" }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true, inserted: data });
