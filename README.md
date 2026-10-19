@@ -2,8 +2,8 @@
 
 Next.js (App Router) TypeScript dashboard that stores air sensor readings in Supabase and shows the latest values for two devices:
 
-- `outer`
-- `purified`
+- `outer` (unfiltered inlet)
+- `inner` (filtered outlet)
 
 ## Environment variables
 
@@ -27,8 +27,17 @@ Headers:
 Body example:
 
 ```json
-{ "device_id": "outer", "pm1": 12, "pm25": 34, "pm10": 56 }
+{ "device": "inner", "pm1": 12, "pm25": 34, "pm10": 56 }
 ```
+
+The legacy key `device_id` is still accepted for backwards compatibility. Rows are stored in `public.air_data` with the `device` column.
+
+## Latest API
+
+- `GET /api/latest?device=outer`
+- `GET /api/latest?device=inner`
+
+The legacy query parameter `device_id` is still accepted for backwards compatibility. Returns `{ "reading": { "device", "pm1", "pm25", "pm10", "created_at" } | null }`, sorted by `created_at` descending.
 
 ## Run locally
 
