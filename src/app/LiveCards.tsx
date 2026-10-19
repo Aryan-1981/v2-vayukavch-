@@ -12,16 +12,7 @@ import {
   Filler,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-
-type DeviceId = "outer" | "purified";
-
-type LatestReading = {
-  device_id: DeviceId;
-  pm1: number | null;
-  pm25: number | null;
-  pm10: number | null;
-  created_at: string;
-};
+import type { DeviceLabel, LatestReading } from "@/lib/queries";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler);
 
@@ -65,10 +56,32 @@ function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
 }
 
-function calcEfficiency(outdoorPm25: number | null, purifiedPm25: number | null) {
-  if (outdoorPm25 == null || purifiedPm25 == null) return null;
-  if (outdoorPm25 <= 0) return null;
-  return ((outdoorPm25 - purifiedPm25) / outdoorPm25) * 100;
+const READING_MAX_AGE_MS = 30_000;
+
+function isFresh(reading: LatestReading | null, maxAgeMs = READING_MAX_AGE_MS): reading is LatestReading {
+  if (!reading) return false;
+  const timestamp = Date.parse(reading.created_at);
+  if (!Number.isFinite(timestamp)) return false;
+  return Date.now() - timestamp <= maxAgeMs;
+}
+
+function calcEfficiency(inlet: LatestReading | null, outlet: LatestReading | null) {
+  if (!isFresh(inlet) || !isFresh(outlet)) return null;
+
+  const inletPm25 = inlet.pm25;
+  const outletPm25 = outlet.pm25;
+
+  if (
+    inletPm25 == null ||
+    outletPm25 == null ||
+    !Number.isFinite(inletPm25) ||
+    !Number.isFinite(outletPm25) ||
+    inletPm25 <= 0
+  ) {
+    return null;
+  }
+
+  return ((inletPm25 - outletPm25) / inletPm25) * 100;
 }
 
 function round1(n: number) {
@@ -187,8 +200,8 @@ function DeviceSection({
   );
 }
 
-async function fetchLatest(device_id: DeviceId) {
-  const res = await fetch(`/api/latest?device_id=${device_id}`, {
+async function fetchLatest(device: DeviceLabel) {
+  const res = await fetch(`/api/latest?device=${device}`, {
     cache: "no-store",
   });
 
@@ -203,23 +216,23 @@ async function fetchLatest(device_id: DeviceId) {
 
 export default function LiveCards({
   initialOuter,
-  initialPurified,
+  initialInner,
   refreshMs = 5000,
 }: {
   initialOuter: LatestReading | null;
-  initialPurified: LatestReading | null;
+  initialInner: LatestReading | null;
   refreshMs?: number;
 }) {
   const [outer, setOuter] = useState<LatestReading | null>(initialOuter);
-  const [purified, setPurified] = useState<LatestReading | null>(initialPurified);
+  const [inner, setInner] = useState<LatestReading | null>(initialInner);
   const [status, setStatus] = useState<string>("OK");
 
   // Keep a small rolling window for the comparison graph (PM2.5).
   const MAX_POINTS = 60;
-  const [series, setSeries] = useState<Array<{ t: string; outer: number | null; purified: number | null }>>(
+  const [series, setSeries] = useState<Array<{ t: string; outer: number | null; inner: number | null }>>(
     () => {
       const t = new Date().toISOString();
-      return [{ t, outer: initialOuter?.pm25 ?? null, purified: initialPurified?.pm25 ?? null }];
+      return [{ t, outer: initialOuter?.pm25 ?? null, inner: initialInner?.pm25 ?? null }];
     }
   );
 
@@ -229,8 +242,8 @@ export default function LiveCards({
   const nextRefreshLabel = useMemo(() => `${Math.round(refreshMs / 1000)}s`, [refreshMs]);
 
   const efficiency = useMemo(
-    () => calcEfficiency(outer?.pm25 ?? null, purified?.pm25 ?? null),
-    [outer?.pm25, purified?.pm25]
+    () => calcEfficiency(outer, inner),
+    [outer, inner]
   );
 
   useEffect(() => {
@@ -238,16 +251,16 @@ export default function LiveCards({
 
     async function tick() {
       try {
-        const [o, p] = await Promise.all([fetchLatest("outer"), fetchLatest("purified")]);
+        const [o, i] = await Promise.all([fetchLatest("outer"), fetchLatest("inner")]);
         if (cancelled) return;
 
         setOuter(o);
-        setPurified(p);
+        setInner(i);
         setStatus("OK");
 
         const t = new Date().toISOString();
         setSeries((prev) => {
-          const nextPoint = { t, outer: o?.pm25 ?? null, purified: p?.pm25 ?? null };
+          const nextPoint = { t, outer: o?.pm25 ?? null, inner: i?.pm25 ?? null };
           const next = hasTickedRef.current ? [...prev, nextPoint] : prev;
           hasTickedRef.current = true;
 
@@ -288,8 +301,8 @@ export default function LiveCards({
           fill: true,
         },
         {
-          label: "Purified (PM2.5)",
-          data: series.map((p) => p.purified),
+          label: "Clean Outlet (PM2.5)",
+          data: series.map((p) => p.inner),
           borderColor: "rgba(34, 197, 94, 0.95)",
           backgroundColor: "rgba(34, 197, 94, 0.12)",
           tension: 0.35,
@@ -306,7 +319,7 @@ export default function LiveCards({
       Math.max(
         10,
         ...series
-          .map((p) => Math.max(p.outer ?? 0, p.purified ?? 0))
+          .map((p) => Math.max(p.outer ?? 0, p.inner ?? 0))
           .filter((n) => Number.isFinite(n))
       ) * 1.2,
       10,
@@ -342,14 +355,17 @@ export default function LiveCards({
     };
   }, [series]);
 
-  const efficiencyLevel: AqiLevel = useMemo(() => {
-    if (efficiency == null) return "Moderate";
+  const efficiencyLevel: AqiLevel | null = useMemo(() => {
+    if (efficiency == null) return null;
     if (efficiency >= 60) return "Good";
     if (efficiency >= 30) return "Moderate";
     return "Poor";
   }, [efficiency]);
 
-  const efficiencyCls = levelClasses(efficiencyLevel);
+  const efficiencyCls =
+    efficiencyLevel == null
+      ? { badge: "bg-white/10 text-white/60 ring-white/15", dot: "bg-white/40" }
+      : levelClasses(efficiencyLevel);
 
   return (
     <div className="space-y-6">
@@ -365,14 +381,14 @@ export default function LiveCards({
             className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1 ring-1 ${efficiencyCls.badge}`}
           >
             <span className={`size-1.5 rounded-full ${efficiencyCls.dot}`} />
-            Efficiency: {efficiency == null ? "—" : `${round1(efficiency)}%`}
+            Efficiency: {efficiency == null ? "Unavailable" : `${round1(efficiency)}%`}
           </span>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <DeviceSection title="Outdoor Air Quality" icon={<IconAlert className="size-5" />} reading={outer} />
-        <DeviceSection title="Purified Air Quality" icon={<IconShield className="size-5" />} reading={purified} />
+        <DeviceSection title="Clean Outlet Air Quality" icon={<IconShield className="size-5" />} reading={inner} />
       </div>
 
       <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
@@ -382,7 +398,7 @@ export default function LiveCards({
               <IconAir className="size-5" />
             </div>
             <div>
-              <h3 className="text-base font-semibold">Outdoor vs Purified — PM2.5 Comparison</h3>
+              <h3 className="text-base font-semibold">Outdoor vs Clean Outlet — PM2.5 Comparison</h3>
               <p className="mt-1 text-xs text-white/60">
                 Live line chart (last {Math.round((MAX_POINTS * refreshMs) / 1000)}s)
               </p>
@@ -400,12 +416,12 @@ export default function LiveCards({
           <div>
             <h3 className="text-base font-semibold">Air Purification Efficiency</h3>
             <p className="mt-1 text-xs text-white/60">
-              efficiency = ((outdoor_pm25 - purified_pm25) / outdoor_pm25) * 100
+              efficiency = ((outer_pm25 - inner_pm25) / outer_pm25) * 100
             </p>
           </div>
           <div className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs ring-1 ${efficiencyCls.badge}`}>
             <span className={`size-1.5 rounded-full ${efficiencyCls.dot}`} />
-            {efficiencyLevel}
+            {efficiencyLevel ?? "Waiting for data"}
           </div>
         </header>
 
@@ -415,13 +431,13 @@ export default function LiveCards({
             <div className="mt-1 text-2xl font-semibold">{outer?.pm25 == null ? "—" : outer.pm25}</div>
           </div>
           <div className="rounded-xl border border-white/10 bg-black/20 p-4">
-            <div className="text-xs text-white/60">Purified PM2.5</div>
-            <div className="mt-1 text-2xl font-semibold">{purified?.pm25 == null ? "—" : purified.pm25}</div>
+            <div className="text-xs text-white/60">Clean Outlet PM2.5</div>
+            <div className="mt-1 text-2xl font-semibold">{inner?.pm25 == null ? "—" : inner.pm25}</div>
           </div>
           <div className="rounded-xl border border-white/10 bg-black/20 p-4">
             <div className="text-xs text-white/60">Efficiency</div>
             <div className="mt-1 text-2xl font-semibold">
-              {efficiency == null ? "—" : `${round1(efficiency)}%`}
+              {efficiency == null ? "Unavailable" : `${round1(efficiency)}%`}
             </div>
             <div className="mt-1 text-[11px] text-white/40">Higher is better</div>
           </div>
