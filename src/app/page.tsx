@@ -1,26 +1,26 @@
 import LegacyLanding from "@/app/LegacyLanding";
-import { getLatest, type LatestReading } from "@/lib/queries";
+import { getLatest, type DeviceLabel } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-async function safeGetLatest(device_id: LatestReading["device_id"]) {
+async function safeGetLatest(device: DeviceLabel) {
   try {
-    return await getLatest(device_id);
+    return await getLatest(device);
   } catch (error) {
     console.error(
-      `[page] Supabase query for "${device_id}" failed:`,
-      error instanceof Error ? (error.cause ?? error) : error
+      `[page] Supabase query for "${device}" failed:`,
+      error instanceof Error ? (error.cause ?? error.message) : error
     );
     return null;
   }
 }
 
 export default async function Page() {
-  const [initialOuter, initialPurified] = await Promise.all([
+  const [initialOuter, initialInner] = await Promise.all([
     safeGetLatest("outer"),
-    safeGetLatest("purified"),
+    safeGetLatest("inner"),
   ]);
 
-  return <LegacyLanding initialOuter={initialOuter} initialPurified={initialPurified} refreshMs={5000} />;
+  return <LegacyLanding initialOuter={initialOuter} initialInner={initialInner} refreshMs={5000} />;
 }
