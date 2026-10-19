@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
@@ -15,6 +15,7 @@ import ParticleField from "./ParticleField";
 import AnimatedLogo from "./AnimatedLogo";
 import PurifierLogo from "./PurifierLogo";
 import type { DeviceLabel, LatestReading } from "@/lib/queries";
+import { describeReadingAge, isReadingFresh } from "@/lib/readings";
 
 type HistoryPoint = {
   time: string;
@@ -29,32 +30,16 @@ function formatTimeLabel(iso: string) {
   return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
-const READING_MAX_AGE_MS = 30_000;
-
-function isFresh(reading: LatestReading | null, maxAgeMs = READING_MAX_AGE_MS): reading is LatestReading {
-  if (!reading) return false;
-  const timestamp = Date.parse(reading.created_at);
-  if (!Number.isFinite(timestamp)) return false;
-  return Date.now() - timestamp <= maxAgeMs;
-}
-
-function calcEfficiency(inlet: LatestReading | null, outlet: LatestReading | null) {
-  if (!isFresh(inlet) || !isFresh(outlet)) return null;
-
-  const inletPm25 = inlet.pm25;
-  const outletPm25 = outlet.pm25;
-
-  if (
-    inletPm25 == null ||
-    outletPm25 == null ||
-    !Number.isFinite(inletPm25) ||
-    !Number.isFinite(outletPm25) ||
-    inletPm25 <= 0
-  ) {
-    return null;
+function ReadingAgeLine({ reading }: { reading: LatestReading | null }) {
+  const fresh = isReadingFresh(reading);
+  if (!reading) {
+    return <div className="mt-2 text-xs text-gray-500">No data yet</div>;
   }
-
-  return ((inletPm25 - outletPm25) / inletPm25) * 100;
+  return (
+    <div className={`mt-2 text-xs ${fresh ? "text-gray-500" : "text-amber-300/90"}`}>
+      {fresh ? `Updated ${describeReadingAge(reading)}` : `Stale — last updated ${describeReadingAge(reading)}`}
+    </div>
+  );
 }
 
 function aqiStatus(pm25: number | null) {
@@ -107,8 +92,10 @@ export default function LegacyLanding({
   const [activeSection, setActiveSection] = useState("home");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>({});
+  const [mounted, setMounted] = useState(false);
 
-  const efficiency = useMemo(() => calcEfficiency(outer, inner), [outer, inner]);
+  useEffect(() => setMounted(true), []);
+
   const status = useMemo(() => aqiStatus(inner?.pm25 ?? null), [inner?.pm25]);
 
   // Intersection observer for reveals
@@ -442,6 +429,7 @@ export default function LegacyLanding({
                 <div className="text-sm sm:text-base text-gray-400">Outdoor PM2.5</div>
                 <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{outer?.pm25 != null ? <CountUp end={outer.pm25} decimals={1} duration={1.5} preserveValue /> : "--"}</div>
                 <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
+                {mounted ? <ReadingAgeLine reading={outer} /> : null}
               </div>
 
               <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
@@ -449,26 +437,26 @@ export default function LegacyLanding({
                 <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{inner?.pm25 != null ? <CountUp end={inner.pm25} decimals={1} duration={1.5} preserveValue /> : "--"}</div>
                 <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
                 <div className={`mt-2 sm:mt-3 text-sm font-medium ${status.color}`}>{status.text}</div>
+                {mounted ? <ReadingAgeLine reading={inner} /> : null}
               </div>
 
               <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
                 <div className="text-sm sm:text-base text-gray-400">Outdoor PM10</div>
                 <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{outer?.pm10 != null ? <CountUp end={outer.pm10} decimals={1} duration={1.5} preserveValue /> : "--"}</div>
                 <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
+                {mounted ? <ReadingAgeLine reading={outer} /> : null}
               </div>
 
               <div className="min-w-[280px] sm:min-w-0 rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/5">
                 <div className="text-sm sm:text-base text-gray-400">Clean Outlet PM10</div>
                 <div className="mt-3 sm:mt-4 text-4xl sm:text-6xl font-bold">{inner?.pm10 != null ? <CountUp end={inner.pm10} decimals={1} duration={1.5} preserveValue /> : "--"}</div>
                 <div className="mt-2 sm:mt-3 text-sm text-gray-500">µg/m³</div>
+                {mounted ? <ReadingAgeLine reading={inner} /> : null}
               </div>
             </div>
           </div>
 
-          <EfficiencyCard
-            outerPM={isFresh(outer) ? outer?.pm25 ?? null : null}
-            outletPM={isFresh(inner) ? inner?.pm25 ?? null : null}
-          />
+          <EfficiencyCard outer={outer} inner={inner} />
 
           <div className="mt-10 sm:mt-12">
             <PremiumAirQualityChart data={outerHistory} height={320} title="Outdoor Trends (Baseline)" subtitle="PM2.5 vs PM10" />
