@@ -1,6 +1,6 @@
 import { supabaseServer } from "@/lib/supabase-server";
 
-export type DeviceLabel = "outer" | "purified";
+export type DeviceLabel = "inner" | "outer";
 
 export type LatestReading = {
   device: DeviceLabel;
@@ -19,6 +19,18 @@ export async function getLatest(device: DeviceLabel) {
     .limit(1)
     .maybeSingle();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    const detail = [
+      `air_data query failed for device "${device}"`,
+      error.message,
+      error.code ? `code=${error.code}` : null,
+      error.details ? `details=${error.details}` : null,
+      error.hint ? `hint=${error.hint}` : null,
+    ]
+      .filter(Boolean)
+      .join(" | ");
+    throw new Error(detail);
+  }
+
   return (data ?? null) as LatestReading | null;
 }
